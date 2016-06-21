@@ -19,7 +19,6 @@
 CREATE USER 'prod_{service_name}'@'localhost' IDENTIFIED BY 'password';
 ```
 `password` nên được tạo ra ngẫu nhiên, ví dụ sử dụng http://passwordsgenerator.net
-
 1. Tạo DB cho production và gán quyền
 ```
 CREATE DATABASE {service_name};
