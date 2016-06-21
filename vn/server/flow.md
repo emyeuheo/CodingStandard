@@ -25,17 +25,16 @@ CREATE USER 'prod_{service_name}'@'localhost' IDENTIFIED BY 'password';
 CREATE DATABASE {service_name};
 GRANT ALL PRIVILEGES ON `{service_name}` . * TO '{service_name}'@'localhost';
 ```
-1. Tạo user `dev_{service_name}`
+2. Tạo user `dev_{service_name}`
 ```
 CREATE USER 'dev_{service_name}'@'localhost' IDENTIFIED BY 'password';
 ```
-1. Tạo DB cho dev và gán quyền
+3. Tạo DB cho dev và gán quyền
 ```
  CREATE DATABASE dev_{service_name};
 GRANT ALL PRIVILEGES ON `dev_{service_name}` . * TO 'dev_{service_name}'@'localhost';
 ```
-
-1. Flush
+4. Flush
 ```
 FLUSH PRIVILEGES;
 ```
@@ -48,12 +47,10 @@ sudo mkdir /var/www/vhosts/{service_name}
 sudo chmod -R ec2-user:nginx /var/www/vhosts/{service_name}/*
 sudo chown -R g+xw /var/www/vhosts/{service_name}/*
 ```
-
-1. Tạo source code folder cho dev và set quyền
+2. Tạo source code folder cho dev và set quyền
 ```
 sudo mkdir /var/www/devhosts/dev_{service_name}
 sudo chmod -R ec2-user:nginx /var/www/vhosts/dev_{service_name}/*
 sudo chown -R g+xw /var/www/vhosts/dev_{service_name}/*
 ```
-
 3. Sau đó setting lại cấu hình `nginx` cho phù hợp
