@@ -9,31 +9,36 @@
 * Thư mục chứa source của production và dev phải khác nhau
 * User MySQL/PostgreSQL của production và dev phải khác nhau
   * Chỉ có User SQL của production mới có quyền với DB production
-  * User SQL của dev có quyền với dev  
+  * User SQL của dev có quyền với dev và staging  
+* Các site dev cần phải cài đặt để Google không đánh index, hoặc cài đặt Basic Auth để tránh bị dòm ngó
+* Bất kỳ site nào đang ở trạng thái công khai với user thì đều cần staging 
 
 ### Chuẩn bị
-
 #### MySQL
-1. Dùng tài khoản `root`, tạo user `prod_{service_name}`
+1. Tăng bảo mật cho MySQL
 ```
-CREATE USER 'prod_{service_name}'@'localhost' IDENTIFIED BY 'password';
+mysql_secure_installation
 ```
-`password` nên được tạo ra ngẫu nhiên, ví dụ sử dụng http://passwordsgenerator.net
+1. Giả định ta có tên website là brochute.com
+1. Dùng tài khoản `root`, tạo user `pro_brochute`
+```
+CREATE USER 'pro_brochute'@'localhost' IDENTIFIED BY '174ed9865123654f2b6211dd3a2ab42b';
+```
+`password` nên được tạo ra ngẫu nhiên, ví dụ sử dụng lệnh `openssl rand -hex 16`
 1. Tạo DB cho production và gán quyền
 ```
-CREATE DATABASE {service_name};
-GRANT ALL PRIVILEGES ON `{service_name}` . * TO '{service_name}'@'localhost';
+CREATE DATABASE pro_brochute;
+GRANT ALL PRIVILEGES ON `pro_brochute` . * TO 'pro_brochute'@'localhost';
 ```
-2. Tạo user `dev_{service_name}`
+2. Tạo DB và user cho dev và staging. Ở đây ta dùng chung 1 user
 ```
-CREATE USER 'dev_{service_name}'@'localhost' IDENTIFIED BY 'password';
+CREATE USER 'dev_brochute'@'localhost' IDENTIFIED BY 'd7b27090b88403c573b18a5c5f38c135';
+CREATE DATABASE dev_brochute;
+CREATE DATABASE sta_brochute;
+GRANT ALL PRIVILEGES ON `dev_brochute` . * TO 'dev_brochute'@'localhost';
+GRANT ALL PRIVILEGES ON `sta_brochute` . * TO 'dev_brochute'@'localhost';
 ```
-3. Tạo DB cho dev và gán quyền
-```
- CREATE DATABASE dev_{service_name};
-GRANT ALL PRIVILEGES ON `dev_{service_name}` . * TO 'dev_{service_name}'@'localhost';
-```
-4. Flush
+3. Flush
 ```
 FLUSH PRIVILEGES;
 ```
@@ -42,14 +47,16 @@ FLUSH PRIVILEGES;
 
 1. Tạo source code folder cho production và set quyền
 ```
-sudo mkdir /var/www/vhosts/{service_name}
-sudo chmod -R ec2-user:nginx /var/www/vhosts/{service_name}/*
-sudo chown -R g+xw /var/www/vhosts/{service_name}/*
+sudo mkdir -p /var/www/vhosts/pro_brochute
+sudo chown -R ec2-user:nginx /var/www/vhosts/pro_brochute/*
+sudo chmod -R g+rw /var/www/vhosts/pro_brochute/*
 ```
-2. Tạo source code folder cho dev và set quyền
+2. Tạo source code folder cho dev và set quyền. Ở đây ta sẽ cho group nginx quyền đọc ghi
 ```
-sudo mkdir /var/www/devhosts/dev_{service_name}
-sudo chmod -R ec2-user:nginx /var/www/vhosts/dev_{service_name}/*
-sudo chown -R g+xw /var/www/vhosts/dev_{service_name}/*
+sudo mkdir -p /var/www/devhosts/dev_brochute /var/www/devhosts/sta_brochute
+sudo chown -R ec2-user:nginx /var/www/devhosts/dev_brochute/*
+sudo chown -R ec2-user:nginx /var/www/devhosts/sta_brochute/*
+sudo chmod -R g+rw /var/www/devhosts/dev_brochute/*
+sudo chmod -R g+rw /var/www/devhosts/sta_brochute/*
 ```
 3. Sau đó setting lại cấu hình `nginx` cho phù hợp
