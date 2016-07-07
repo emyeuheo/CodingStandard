@@ -37,7 +37,7 @@
 1. Tạo DB và user cho dev và staging. Ở đây ta dùng chung 1 user
 
  ```
- CREATE USER dev_relipa@localhost IDENTIFIED BY d7b27090b88403c573b18a5c5f38c135;
+ CREATE USER dev_relipa@localhost IDENTIFIED BY 'd7b27090b88403c573b18a5c5f38c135';
  CREATE DATABASE dev_relipa;
  CREATE DATABASE sta_relipa;
  GRANT ALL PRIVILEGES ON dev_relipa . * TO dev_relipa@localhost;
@@ -52,7 +52,7 @@
 
 ### Server
 #### Tạo source code folder
-1. Tạo source code folder cho production và set quyền. Ở đây ta sẽ cho group nginx quyền đọc ghi
+1. Tạo source code folder cho production và set quyền. Ở đây ta sẽ cho group `nginx` quyền đọc ghi
 
  ```
  sudo mkdir -p /var/www/vhosts/pro_relipa
@@ -77,7 +77,7 @@
  sudo htpasswd -c /etc/nginx/.htpasswd relipa
  ```
 1. Thiết lập lại cấu hình `nginx` bằng cách thêm 2 dòng sau vào file `.conf` của dev và staging
- 
+
  ```
  auth_basic "Relipa Awesome";
  auth_basic_user_file /etc/nginx/.htpasswd;
