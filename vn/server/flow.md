@@ -22,26 +22,26 @@
  mysql_secure_installation
  ```
 
-1. Giả định ta có tên website là brochute.com
-1. Dùng tài khoản `root`, tạo user `pro_brochute`
+1. Giả định ta có dự án cho website là http://relipasoft.com
+1. Dùng tài khoản `root`, tạo user `pro_relipa`
  ```
- CREATE USER pro_brochute@localhost IDENTIFIED BY '174ed9865123654f2b6211dd3a2ab42b';
+ CREATE USER pro_relipa@localhost IDENTIFIED BY '174ed9865123654f2b6211dd3a2ab42b';
  ```
  `password` nên được tạo ra ngẫu nhiên, ví dụ sử dụng lệnh `openssl rand -hex 16`
 
 1. Tạo DB cho production và gán quyền
  ```
- CREATE DATABASE pro_brochute;
- GRANT ALL PRIVILEGES ON pro_brochute . * TO pro_brochute@localhost;
+ CREATE DATABASE pro_relipa;
+ GRANT ALL PRIVILEGES ON pro_relipa . * TO pro_relipa@localhost;
  ```
 1. Tạo DB và user cho dev và staging. Ở đây ta dùng chung 1 user
 
  ```
- CREATE USER dev_brochute@localhost IDENTIFIED BY d7b27090b88403c573b18a5c5f38c135;
- CREATE DATABASE dev_brochute;
- CREATE DATABASE sta_brochute;
- GRANT ALL PRIVILEGES ON dev_brochute . * TO dev_brochute@localhost;
- GRANT ALL PRIVILEGES ON sta_brochute . * TO dev_brochute@localhost;
+ CREATE USER dev_relipa@localhost IDENTIFIED BY d7b27090b88403c573b18a5c5f38c135;
+ CREATE DATABASE dev_relipa;
+ CREATE DATABASE sta_relipa;
+ GRANT ALL PRIVILEGES ON dev_relipa . * TO dev_relipa@localhost;
+ GRANT ALL PRIVILEGES ON sta_relipa . * TO dev_relipa@localhost;
  ```
 
 1. Flush
@@ -51,21 +51,32 @@
  ```
 
 ### Server
-
+#### Tạo source code folder
 1. Tạo source code folder cho production và set quyền. Ở đây ta sẽ cho group nginx quyền đọc ghi
 
  ```
- sudo mkdir -p /var/www/vhosts/pro_brochute
- sudo chown -R ec2-user:nginx /var/www/vhosts/pro_brochute/
- sudo chmod -R g+rw /var/www/vhosts/pro_brochute/
+ sudo mkdir -p /var/www/vhosts/pro_relipa
+ sudo chown -R ec2-user:nginx /var/www/vhosts/pro_relipa/
+ sudo chmod -R g+rw /var/www/vhosts/pro_relipa/
  ```
 1. Tạo source code folder cho dev và set quyền
 
  ```
- sudo mkdir -p /var/www/devhosts/dev_brochute /var/www/devhosts/sta_brochute
- sudo chown -R ec2-user:nginx /var/www/devhosts/dev_brochute/
- sudo chown -R ec2-user:nginx /var/www/devhosts/sta_brochute/
- sudo chmod -R g+rw /var/www/devhosts/dev_brochute/
- sudo chmod -R g+rw /var/www/devhosts/sta_brochute/
+ sudo mkdir -p /var/www/devhosts/dev_relipa /var/www/devhosts/sta_relipa
+ sudo chown -R ec2-user:nginx /var/www/devhosts/dev_relipa/
+ sudo chown -R ec2-user:nginx /var/www/devhosts/sta_relipa/
+ sudo chmod -R g+rw /var/www/devhosts/dev_relipa/
+ sudo chmod -R g+rw /var/www/devhosts/sta_relipa/
  ```
-1. Sau đó setting lại cấu hình `nginx` cho phù hợp
+1. Thiết lập lại cấu hình `nginx` để nhận 2 folder trên ứng với dev và staging
+
+#### Thiết lập Basic Auth cho dev và staging site
+1. Tạo file chứa user và password
+ ```
+ sudo htpasswd -c /etc/nginx/.htpasswd relipa
+ ```
+1. Thiết lập lại cấu hình `nginx` bằng cách thêm 2 dòng sau vào file `.conf` của dev và staging
+ ```
+ auth_basic "Relipa Awesome";
+ auth_basic_user_file /etc/nginx/.htpasswd;
+ ```
