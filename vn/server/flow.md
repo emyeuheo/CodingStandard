@@ -72,10 +72,12 @@
 
 #### Thiết lập Basic Auth cho dev và staging site
 1. Tạo file chứa user và password
+
  ```
  sudo htpasswd -c /etc/nginx/.htpasswd relipa
  ```
 1. Thiết lập lại cấu hình `nginx` bằng cách thêm 2 dòng sau vào file `.conf` của dev và staging
+ 
  ```
  auth_basic "Relipa Awesome";
  auth_basic_user_file /etc/nginx/.htpasswd;
