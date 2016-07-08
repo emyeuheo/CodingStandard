@@ -52,14 +52,23 @@
 
 ### Server
 #### Tạo source code folder
-1. Tạo source code folder cho production và set quyền. Ở đây ta sẽ cho group `nginx` quyền đọc ghi
+1. Tạo user prodman với password random 64 kí tự, thuộc group nginx
+```
+sudo useradd -G nginx prodman
+sudo passwd prodman
+```
+(Password tốt nhất nên đưa cho khách hàng và huỷ toàn bộ dấu vết sau khi đưa xong)
+(Việc này ngăn chặn việc member deploy bằng FTP tuỳ tiện trên production)
+(Chỉ có sysadmin, member có quyền deploy của dự án và khách hàng được phép truy cập và sử dụng user này)
+
+1. Tạo source code folder cho production và set quyền cho user prodman. Ở đây ta sẽ cho group `nginx` quyền đọc ghi
 
  ```
  sudo mkdir -p /var/www/vhosts/pro_relipa
- sudo chown -R ec2-user:nginx /var/www/vhosts/pro_relipa/
+ sudo chown -R prodman:nginx /var/www/vhosts/pro_relipa/
  sudo chmod -R g+rw /var/www/vhosts/pro_relipa/
  ```
-1. Tạo source code folder cho dev và set quyền
+1. Tạo source code folder cho dev và set quyền cho user nào đó (ở đây là ec2-user)
 
  ```
  sudo mkdir -p /var/www/devhosts/dev_relipa /var/www/devhosts/sta_relipa
